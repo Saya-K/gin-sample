@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue.js とaxios のJSONテスト</title>
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+<h1>Vue.js とaxios のJSONテスト</h1>
+<div id="articles">
+    <h1 class="errmsg" v-if="posts.err != null">{{ posts.err }}</h1>
+    <table border="1" v-if="posts.name != null">
+        <tr>
+            <th><h1>id</h1></th>
+            <th><h1>name</h1></th>
+        </tr>
+        <tr>
+            <td><h2>{{ posts.id }}</h2></td>
+            <td><h2>{{ posts.name }}</h2></td>
+        </tr>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="../scripts/main.js"></script>
+</body>
+</html>
