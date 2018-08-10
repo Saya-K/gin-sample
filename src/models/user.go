@@ -1,46 +1,39 @@
 package models
 
 import (
-	"github.com/go-xorm/xorm"
+	"database/sql"
 	_ "github.com/lib/pq"
+	"os"
 )
 
-var engine *xorm.Engine
+var Db *sql.DB
+
+const (
+	getUserById   = "SELECT * FROM users WHERE id = $1"
+	createNewUser = "INSERT INTO users VALUES (DEFAULT, $1) RETURNING id"
+)
 
 type Users struct {
-	ID       int    `json:"id" xorm:"'id'"`
-	Username string `json:"name" xorm:"'nickname'"`
-}
-
-type UserRepository struct {
+	ID       int    `json:"id"`
+	Username string `json:"name"`
 }
 
 func init() {
 	var err error
-	engine, err = xorm.NewEngine("postgres", "user=postgres password=admin host=localhost port=5432 dbname=gin_sample sslmode=disable")
-
+	Db, err = sql.Open("postgres", "user=postgres password=admin host=localhost port=5432 dbname=gin_sample sslmode=disable")
 	if err != nil {
-		panic(err)
+		os.Exit(2)
 	}
 }
 
-func NewUser(id int, username string) Users {
-	return Users{
-		ID:       id,
-		Username: username,
-	}
+func (user *Users) GetByID() error {
+	err := Db.QueryRow(getUserById, user.ID).Scan(&user.ID, &user.Username)
+
+	return err
 }
 
-func NewUserRepository() UserRepository {
-	return UserRepository{}
-}
+func (user *Users) CreateNewUser() error {
+	err := Db.QueryRow(createNewUser, user.Username).Scan(&user.ID)
 
-func (ur UserRepository) GetByID(id int) *Users {
-	var user = Users{ID: id}
-	has, _ := engine.Get(&user)
-	if has {
-		return &user
-	}
-
-	return nil
+	return err
 }
