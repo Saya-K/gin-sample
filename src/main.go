@@ -14,13 +14,11 @@ func main() {
 	router.OPTIONS("/createNewUser", options)
 	router.POST("/createNewUser", createNewUser)
 
-	router.Run(":8000")
-}
+	router.OPTIONS("/login", options)
+	router.POST("/login", login)
 
-//func getRoot(c *gin.Context) {
-//
-//	c.HTML(200, "main.html", gin.H{})
-//}
+	router.Run(":8081")
+}
 
 func getUserById(c *gin.Context) {
 	config(c)
@@ -53,8 +51,29 @@ func createNewUser(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(user)
 	c.JSON(200, user)
+}
+
+func login(c *gin.Context) {
+	type User struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	config(c)
+
+	var user User
+	err := c.BindJSON(&user)
+	if err != nil {
+		c.JSON(401, gin.H{"result": false, "token": "", "msg": "failed"})
+		return
+	}
+
+	if user.Password == "a" {
+		c.JSON(401, gin.H{"result": false, "token": "", "msg": "failed"})
+	} else {
+		c.JSON(200, gin.H{"result": true, "token": "abcdefghijklmnop", "msg": "success"})
+	}
 }
 
 func options(c *gin.Context) {
