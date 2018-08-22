@@ -3,6 +3,7 @@ package main
 import (
 	"bitbucket.org/s-kurokawa/gin-sample/src/controllers"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -10,19 +11,20 @@ import (
 func main() {
 	router := gin.Default()
 
+	// CORS(Cross-Origin Resource Sharing)対応
+	// @see https://github.com/gin-contrib/cors
+	// 全ての接続元を許可
+	router.Use(cors.Default())
+
 	router.GET("/:id", getUserById)
-	router.OPTIONS("/createNewUser", options)
 	router.POST("/createNewUser", createNewUser)
 
-	router.OPTIONS("/login", options)
 	router.POST("/login", login)
 
 	router.Run(":8081")
 }
 
 func getUserById(c *gin.Context) {
-	config(c)
-
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"status": fmt.Sprint(err)})
@@ -43,8 +45,6 @@ func getUserById(c *gin.Context) {
 }
 
 func createNewUser(c *gin.Context) {
-	config(c)
-
 	user, err := controllers.CreateNewUser(c)
 	if err != nil {
 		c.JSON(404, gin.H{"status": fmt.Sprint(err)})
@@ -60,8 +60,6 @@ func login(c *gin.Context) {
 		Password string `json:"password"`
 	}
 
-	config(c)
-
 	var user User
 	err := c.BindJSON(&user)
 	if err != nil {
@@ -74,12 +72,4 @@ func login(c *gin.Context) {
 	} else {
 		c.JSON(200, gin.H{"result": true, "token": "abcdefghijklmnop", "msg": "success"})
 	}
-}
-
-func options(c *gin.Context) {
-	config(c)
-}
-func config(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Headers", c.Request.Header.Get("Access-Control-Request-Headers"))
 }

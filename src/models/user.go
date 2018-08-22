@@ -20,7 +20,7 @@ type Users struct {
 
 func init() {
 	var err error
-	Db, err = sql.Open("postgres", "user=postgres password=admin host=localhost port=5432 dbname=gin_sample sslmode=disable")
+	Db, err = sql.Open("postgres", "user=postgres password=postgres host=localhost port=5432 dbname=gin_sample sslmode=disable")
 	if err != nil {
 		os.Exit(2)
 	}
